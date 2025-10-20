@@ -1,5 +1,13 @@
 // Vite plugin entry point
 import type { ResolvedConfig } from "vite";
+import { loadEnv } from "vite";
+import { parseEnv } from "./utils/parser.js";
+import { validateEnv } from "./validate.js";
+import { isStandardSchema } from "./utils/isStandardSchema.js";
+import { EnvkaOptions } from "./types.js";
+import { generateEnvTypes } from "./generateTypes.js";
+import * as fs from "fs";
+import * as path from "path";
 
 export type {
   EnvkaStandardSchemaV1,
@@ -8,17 +16,14 @@ export type {
   EnvkaSchema,
 } from "./envkaValidator.js";
 
-import { validateEnv } from "./validate.js";
-import { isStandardSchema } from "./utils/isStandardSchema.js";
-import { EnvkaOptions } from "./types.js";
-import { generateEnvTypes } from "./generateTypes.js";
-import * as fs from "fs";
-import * as path from "path";
-
 export default function envka(options: EnvkaOptions) {
   return {
     name: "vite-plugin-envka",
-    configResolved(config: ResolvedConfig) {
+    config(config: any, envCtx: any) {
+      /**
+       * TODO! ERROR HANDLING IS NOT OK. Need to rethink this part. We want HMR to still work but
+       * stop builds on invalid env vars.
+       */
       if (!options.schema) {
         /**
          * If no schema is provided, just log a warning and skip validation.
@@ -36,10 +41,13 @@ export default function envka(options: EnvkaOptions) {
         );
       }
 
+      const rootPath = config.root ?? process.cwd();
+      const envMap = loadEnv(envCtx.mode, rootPath, "");
+
       /**
        * Validate env vars against the schema
        */
-      const result = validateEnv(options.schema, config.env);
+      const result = validateEnv(options.schema, parseEnv(envMap));
 
       /**
        * Handle validation result
@@ -55,7 +63,7 @@ export default function envka(options: EnvkaOptions) {
             options.schema,
             result.value as Record<string, unknown>
           );
-          const outPath = path.resolve(config.root, "env.d.ts");
+          const outPath = path.resolve(rootPath, "env.d.ts");
           fs.writeFileSync(outPath, types);
           console.info(`[envka] Generated env.d.ts at ${outPath}`);
         }
