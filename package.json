@@ -5,6 +5,14 @@
   "author": {
     "name": "Ireneo C. Cobar Jr"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ireneo-cobarjr/vite-plugin-envka.git"
+  },
+  "homepage": "https://github.com/ireneo-cobarjr/vite-plugin-envka",
+  "bugs": {
+    "url": "https://github.com/ireneo-cobarjr/vite-plugin-envka/issues"
+  },
   "license": "BSD-3-Clause",
   "keywords": [
     "vite",
