@@ -192,4 +192,4 @@ BSD-3 Clause
 <!-- - [npm](https://www.npmjs.com/package/vite-plugin-envka) -->
 
 - [Vite](https://vitejs.dev/)
-- [Issues](https://github.com/your-org/vite-plugin-envka/issues)
+- [Issues](https://github.com/ireneo-cobarjr/vite-plugin-envka/issues)
