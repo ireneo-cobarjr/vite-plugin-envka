@@ -30,3 +30,5 @@ test-arktype/
 test-valibot/
 test-zod/
 test-joi/
+
+*.tgz
