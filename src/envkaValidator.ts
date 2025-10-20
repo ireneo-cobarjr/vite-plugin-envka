@@ -34,23 +34,17 @@ export type EnvkaSchema = Record<string, EnvkaField>;
  */
 export function generateExample(schema: EnvkaSchema): string {
   const lines = Object.entries(schema).map(([key, field]) => {
-    const comments: string[] = [];
-    if (field.type) comments.push(field.type);
-    if (field.enum) comments.push(`enum: ${field.enum.join(", ")}`);
-    if (field.union) comments.push(`union`);
-    if (field.range)
-      comments.push(`range: ${field.range[0]}-${field.range[1]}`);
-    if (field.default !== undefined) {
-      comments.push(`default=${JSON.stringify(field.default)}`);
-      comments.push("optional");
-    }
-    let out = "";
+    let comment = "";
     if (field.description) {
-      out += `# ${field.description}\n`;
+      comment = `# ${field.description}`;
+    } else if (field.type === "enum" && field.enum) {
+      comment = `# enum: ${field.enum.join(", ")}`;
+    } else if (field.type) {
+      comment = `# ${field.type}`;
+    } else {
+      comment = "#";
     }
-    const commentLine = comments.length ? `# ${comments.join(", ")}` : "#";
-    out += `${commentLine}\n${key}=${field.default ?? ""}`;
-    return out;
+    return `${comment}\n${key}=${field.default ?? ""}`;
   });
   return lines.join("\n\n") + "\n";
 }
