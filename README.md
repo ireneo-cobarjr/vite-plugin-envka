@@ -13,7 +13,7 @@
 - Validate environment variables at Vite build and dev server startup
 - TypeScript type generation (env.d.ts)
 - Generate `.env.example` from schema
-- Supports Zod, Valibot, ArkType, Joi, built-in validator and any schema library that supports [standard-schema](https://github.com/standard-schema/standard-schema).
+- Supports only the built-in validator (envkaValidator).
 - Checking for unused and undeclared environment variables (not yet ready)
 
 ## Installation
@@ -67,110 +67,22 @@ Generating .env.example is done via the CLI
 npx env example --schema /path/to/schema/file --output /optional/output
 ```
 
-Only supports Zod, Valibot, ArkType, Joi and the built-in validator
+Only supports the built-in validator
 
 ## Configuration example
-
-##### Zod
-
-```ts
-import { z } from "zod";
-
-/** Example with zod */
-export const schemaZod = z.object({
-  FOO: z.string().default("bar"),
-  BAR: z.number().default(42),
-  TEST_MODE: z.enum(["dev", "prod"]).default("dev"),
-});
-
-export default {
-  plugins: [
-    envka({
-      schema: schemaZod,
-      generateTypes: true,
-    }),
-  ],
-};
-```
-
-##### ArkType
-
-```ts
-import { type } from "arktype";
-
-/** Example with ArkType */
-export const schemaArkType = type({
-  FOO: "string",
-  BAR: "number",
-  TEST_MODE: "'dev'|'prod'",
-});
-
-export default {
-  plugins: [
-    envka({
-      schema: schemaArkType,
-      generateTypes: true,
-    }),
-  ],
-};
-```
-
-##### Valibot
-
-```ts
-import { object, string, number, enum_ } from "valibot";
-
-/** Example with Valibot */
-export const schemaValibot = object({
-  FOO: string(),
-  BAR: number(),
-  TEST_MODE: enum_({ dev: "dev", prod: "prod" }),
-});
-
-export default {
-  plugins: [
-    envka({
-      schema: schemaValibot,
-      generateTypes: true,
-    }),
-  ],
-};
-```
-
-##### Joi
-
-```ts
-/** Example with Joi */
-export const schemaJoi = Joi.object({
-  FOO: Joi.string().default("bar"),
-  BAR: Joi.number().default(42),
-  TEST_MODE: Joi.string().valid("dev", "prod").default("dev"),
-});
-
-export default {
-  plugins: [
-    envka({
-      schema: schemaJoi,
-      generateTypes: true,
-    }),
-  ],
-};
-```
-
-##### Built-in validator
 
 ```ts
 import envka, { envkaValidator } from "vite-plugin-envka";
 
 /** Example using Envka Validator */
 export const builtinSchema = envkaValidator({
-  FOO: { type: "string" as const, default: "bar" },
+  FOO: { type: "string", default: "bar" },
   BAR: {
-    type: "number" as const,
+    type: "number",
     default: 42,
     description: "A comment on your .env.example",
   },
-  TEST_MODE: { type: "enum" as const, enum: ["dev", "prod"], default: "dev" },
+  TEST_MODE: { type: "enum", enum: ["dev", "prod"], default: "dev" },
 });
 
 export default {

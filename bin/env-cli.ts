@@ -4,6 +4,7 @@ import * as path from "path";
 import * as fs from "fs";
 import chalk from "chalk";
 import { printEnvExample } from "../src/printEnvExample.js";
+import { log } from "../src/utils/log.js";
 
 const program = new Command();
 program.name("env").description("Environment CLI for envka plugin");
@@ -22,22 +23,14 @@ program
   .action(async (opts) => {
     const schemaPath = opts.schema;
     if (!schemaPath) {
-      console.error(
-        `${chalk.red("Error:")} ${chalk.hex("#FFA500")(
-          "--schema option is required."
-        )}`
-      );
+      log("--schema option is required.", "error");
       process.exit(1);
     }
     const absSchemaPath = path.isAbsolute(schemaPath)
       ? schemaPath
       : path.resolve(process.cwd(), schemaPath);
     if (!fs.existsSync(absSchemaPath)) {
-      console.error(
-        `${chalk.red("Error:")} ${chalk.hex("#FFA500")(
-          `Schema file not found at ${absSchemaPath}`
-        )}`
-      );
+      log(`Schema file not found at ${absSchemaPath}`, "error");
       process.exit(1);
     }
 
@@ -46,11 +39,7 @@ program
     try {
       imported = await import(absSchemaPath);
     } catch (e) {
-      console.error(
-        `${chalk.red("Error:")} ${chalk.hex("#FFA500")(
-          `Failed to import schema from ${absSchemaPath}`
-        )}`
-      );
+      log(`Failed to import schema from ${absSchemaPath}`, "error");
       process.exit(1);
     }
     // Use imported schema for .env.example generation
@@ -59,11 +48,7 @@ program
     try {
       exampleContent = printEnvExample(schema);
     } catch (e) {
-      console.error(
-        `${chalk.red("Error:")} ${chalk.hex("#FFA500")(
-          "Failed to generate .env.example"
-        )}`
-      );
+      log("Failed to generate .env.example", "error");
       process.exit(1);
     }
     const outputPath = opts.output
@@ -72,7 +57,7 @@ program
         : path.resolve(process.cwd(), opts.output)
       : path.resolve(process.cwd(), ".env.example");
     fs.writeFileSync(outputPath, exampleContent);
-    console.log(chalk.green(`.env.example generated at ${outputPath}`));
+    log(`.env.example generated at ${outputPath}`, "success");
   });
 
 program.parse(process.argv);

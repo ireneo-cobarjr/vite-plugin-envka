@@ -1,9 +1,10 @@
-import type { StandardSchemaV1 } from "@standard-schema/spec";
 import { renderEnvDts } from "./utils/renderEnvDts.js";
 
-// Extends StandardSchemaV1 to allow generateType property
-export type EnvkaStandardSchemaV1 = Omit<StandardSchemaV1, "~standard"> & {
-  "~standard": StandardSchemaV1["~standard"] & {
+export type EnvkaStandardSchemaV1 = EnvkaSchema & {
+  "~standard": {
+    version: 1;
+    vendor: "envka";
+    validate: (env: Record<string, any>) => { valid: boolean; issues?: any[] };
     generateType: () => string;
     generateExample: () => string;
     rawSchema: EnvkaSchema;
@@ -23,7 +24,6 @@ export interface EnvkaField {
   enum?: Array<string | number>;
   union?: Array<EnvkaField>;
   range?: [number, number];
-  default?: any;
   description?: string;
 }
 
@@ -44,7 +44,7 @@ export function generateExample(schema: EnvkaSchema): string {
     } else {
       comment = "#";
     }
-    return `${comment}\n${key}=${field.default ?? ""}`;
+    return `${comment}\n${key}=`;
   });
   return lines.join("\n\n") + "\n";
 }
@@ -78,13 +78,15 @@ function validateEnvka(env: Record<string, any>, schema: EnvkaSchema) {
   const result: Record<string, any> = {};
   for (const key in schema) {
     const field = schema[key];
-    let value = env[key];
-    // Use default if value is undefined, empty string, and default is specified
-    if ((value === undefined || value === "") && field.default !== undefined) {
-      value = field.default;
-    }
+    const value = env[key];
     if (!validateField(field, value)) {
-      issues.push(`Invalid value for ${key}: ${value}`);
+      let expectedStr: string = field.type;
+      if (field.type === "enum" && Array.isArray(field.enum)) {
+        expectedStr = field.enum.join(" | ");
+      }
+      issues.push(
+        `Invalid value for ${key}: got ${value} but expected ${expectedStr}`
+      );
     } else {
       result[key] = value;
     }
@@ -133,7 +135,8 @@ function generateEnvkaTypes(schema: EnvkaSchema): string {
  */
 
 const envkaValidator = (schema: EnvkaSchema): EnvkaStandardSchemaV1 => {
-  return {
+  const { ["~standard"]: _, ...fields } = schema as any;
+  return Object.assign({}, fields, {
     "~standard": {
       version: 1 as 1,
       vendor: "envka",
@@ -151,8 +154,7 @@ const envkaValidator = (schema: EnvkaSchema): EnvkaStandardSchemaV1 => {
       generateExample: () => generateExample(schema),
       rawSchema: schema,
     },
-  };
+  });
 };
 
 export default envkaValidator;
-export { validateEnvka };
