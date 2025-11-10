@@ -13,19 +13,12 @@
 - Validate environment variables at Vite build and dev server startup
 - TypeScript type generation (env.d.ts)
 - Generate `.env.example` from schema
-- Supports only the built-in validator (envkaValidator).
-- Checking for unused and undeclared environment variables (not yet ready)
+- Checking for unused and undeclared environment variables (planned)
 
 ## Installation
 
 ```bash
 npm install vite-plugin-envka --save-dev
-```
-
-or
-
-```bash
-yarn add vite-plugin-envka --dev
 ```
 
 ## Usage
@@ -48,16 +41,16 @@ import envka from "vite-plugin-envka";
 export default {
   plugins: [
     envka({
-      schema: /** standard-schema */,
-      generateTypes: false, /** Default */
-    })
+      schema,
+      generateTypes: false /** Default */,
+    }),
   ],
 };
 ```
 
 ### env.d.ts generation
 
-Generating env.d.ts is done after a successful validation. By default, its turned-off. You need to add `generateTypes: true` to turn it on. Zod, Valibot, ArkType and the builtin validator supports `enum` while others like Joi will end up with primitive types (i.e _string_, _number_ and _boolean_).
+Generating env.d.ts is done after a successful validation. By default, its turned-off. You need to add `generateTypes: true` to turn it on.
 
 ### .env.example generation
 
@@ -66,8 +59,6 @@ Generating .env.example is done via the CLI
 ```bash
 npx env example --schema /path/to/schema/file --output /optional/output
 ```
-
-Only supports the built-in validator
 
 ## Configuration example
 
@@ -79,10 +70,9 @@ export const builtinSchema = envkaValidator({
   FOO: { type: "string", default: "bar" },
   BAR: {
     type: "number",
-    default: 42,
     description: "A comment on your .env.example",
   },
-  TEST_MODE: { type: "enum", enum: ["dev", "prod"], default: "dev" },
+  TEST_MODE: { type: "enum", enum: ["dev", "prod"] },
 });
 
 export default {

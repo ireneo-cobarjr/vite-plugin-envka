@@ -24,11 +24,4 @@ yarn-error.log*
 # Misc
 .DS_Store
 
-# Test Artifacts
-test-builtin/
-test-arktype/
-test-valibot/
-test-zod/
-test-joi/
-
 *.tgz

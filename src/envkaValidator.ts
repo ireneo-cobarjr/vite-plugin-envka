@@ -129,11 +129,6 @@ function generateEnvkaTypes(schema: EnvkaSchema): string {
   return renderEnvDts(lines);
 }
 
-/**
- * Wraps a plain envkaValidator schema and returns a Standard Schema-compliant object.
- * Usage: export const schema = toStandardSchema({ ... });
- */
-
 const envkaValidator = (schema: EnvkaSchema): EnvkaStandardSchemaV1 => {
   const { ["~standard"]: _, ...fields } = schema as any;
   return Object.assign({}, fields, {
@@ -146,9 +141,14 @@ const envkaValidator = (schema: EnvkaSchema): EnvkaStandardSchemaV1 => {
             ? (value as Record<string, any>)
             : {};
         const result = validateEnvka(env, schema);
-        if (result.issues)
-          return { value: undefined, issues: result.issues } as any;
-        return { value: result.value, issues: undefined } as any;
+        if (result.issues) {
+          return {
+            value: undefined,
+            issues: result.issues,
+            valid: false,
+          };
+        }
+        return { value: result.value, issues: undefined, valid: true };
       },
       generateType: () => generateEnvkaTypes(schema),
       generateExample: () => generateExample(schema),

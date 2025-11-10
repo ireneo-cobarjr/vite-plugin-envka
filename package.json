@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-envka",
   "description": "Envka is a vite plugin designed to enhance environment variable management in Vite projects.",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "author": {
     "name": "Ireneo C. Cobar Jr"
   },
