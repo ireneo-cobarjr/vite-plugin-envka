@@ -1,8 +1,8 @@
 # vite-plugin-envka
 
-[![npm version](https://img.shields.io/npm/v/vite-plugin-envka.svg)](https://www.npmjs.com/package/vite-plugin-envka)
+[![npm version](https://img.shields.io/npm/v/vite-plugin-envka.svg)](https://www.npmjs.com/package/vite-plugin-envka) [![Vite](https://img.shields.io/badge/vite-compatible-blue.svg)](https://vitejs.dev/)
 
-[![Vite](https://img.shields.io/badge/vite-compatible-blue.svg)](https://vitejs.dev/)
+![Logo](./logo.png)
 
 ## Overview
 
