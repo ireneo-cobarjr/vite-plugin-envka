@@ -65,9 +65,9 @@ npx env example --schema /path/to/schema/file --output /optional/output
 ```ts
 import envka, { envkaValidator } from "vite-plugin-envka";
 
-/** Example using Envka Validator */
-export const builtinSchema = envkaValidator({
-  FOO: { type: "string", default: "bar" },
+/** Env schema object should always be default export */
+export default envkaValidator({
+  FOO: { type: "string" },
   BAR: {
     type: "number",
     description: "A comment on your .env.example",
