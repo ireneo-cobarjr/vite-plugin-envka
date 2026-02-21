@@ -42,11 +42,15 @@ program
       log(`Failed to import schema from ${absSchemaPath}`, "error");
       process.exit(1);
     }
-    // Use imported schema for .env.example generation
-    const schema = imported.default || imported.schema || imported;
+
+    if (!imported.default) {
+      log("schema object should be a default export", "error");
+      process.exit(1);
+    }
+
     let exampleContent: string;
     try {
-      exampleContent = printEnvExample(schema);
+      exampleContent = printEnvExample(imported.default);
     } catch (e) {
       log("Failed to generate .env.example", "error");
       process.exit(1);
